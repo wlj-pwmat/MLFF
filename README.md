@@ -1,6 +1,6 @@
 # Machine Learning Force Field
 
-## Intriduction:
+## Introduction:
 
 Machine Learning Force Field (MLFF) an is open source software under GNU license. It aims at generating force fields with accuracy comparable to Ab Initio Molecular Dynamics (AIMD). It is compatible with AIMD data in either **PWmat** or **VASP** format. 
 
