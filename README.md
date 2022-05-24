@@ -1,80 +1,35 @@
-# MLFF
+# Machine Learning Force Field
 
-> MLFF is a machine learning(ML) based method of force fields (FF) for molecular dynamics simulations, which is written in Python/Fortran.  This project uses 8 different types of features (typically translational, rotation, and permutation invariant), aims at retaining the accuracy of ab initio density functional theory (DFT) . 
->
->  More specifically, Type1: 2B features(use piecewise cosine basis functions); Type2: 3B features(three sub-types, just like in 2b); Type3: 2B Gaussian (use Gaussian function multiplying a mask function to make it smooth); Type4: 3Bcos(based on the idea of bond angles); Type5: Multiple Tensor Potential(uses the amplitude of charge, dipole, quadrapole, etc); Type6: SNAP (spectral neighbor analysis potential); Type7: deepMD1; Type8: deepMD2.
+### Intriduction:
 
-## Getting Started
+Machine Learning Force Field (MLFF) an is open source software under GNU license. It aims at generating force fields with accuracy comparable to Ab Initio Molecular Dynamics (AIMD). It is compatible with AIMD data with either **PWmat** or **VASP** format. You can download the code and the sample data from this link: http://www.pwmat.com/pwmat-resource/module-download/file/MLFF.zip. 
 
-### Prerequisites  and  Installation
+This package contains 8 types of features with translation, rotation, and permutation invariance, which are
 
-export MKLROOT=/the/path/to/mkl
+        1. 2-body(2b)
+        2. 3-body(3b) 
+        3. 2-body Gaussian(2bgauss)
+        4. 3-body Cosine(3bcos) 
+        5. Multiple Tensor Potential(MTP)
+        6. Spectral Neighbor Analysis Potential(SNAP)
+        7. Deep Potential-Chebyshev(dp1)        
+        8. Deep Potential-Gaussian(dp2) 
 
-```sh
-with conda:
-	# create conda env
-	conda create -n *name* python=3.8
-	conda activate *name*
-	conda install astunparse numpy ninja pyyaml mkl mkl-include setuptools cmake cffi typing_extensions future six requests dataclasses
-	conda install -c pytorch magma-cuda110  # use the magma-cuda* that matches your CUDA version
+and 4 engines for training and prediction, which are 
 
-	git clone --recursive https://github.com/pytorch/pytorch
-	cd pytorch
-	# if you are updating an existing checkout
-	git submodule sync
-	git submodule update --init --recursive --jobs 0
-	export CMAKE_PREFIX_PATH=${CONDA_PREFIX:-"$(dirname $(which conda))/../"}
-	python setup.py install
+        1. Linear Model
+        2. Nonlinear VV Model
+        3. Kalman Filter-based Neural Netowrk (KFNN)
+        4. Kalman Filter-based Deep Potential Model(KFDP)
 
-	# compiler
-	cd /the/path/the/MLFF_torch/src
-	./build.sh
-    export PATH=the/path/to/MLFF_torch/src/bin:$PATH
-	cd op && python setup.py install
-    conda deactivate *name*
-    
-    
-```
+In practice, user may freely combining features with models (except for Deep Potential model, since it defines feature differerntly). A illustration of such a process is shown below. In future, we will also add support for user-defined features and training model. 
 
-```sh
-with dorcker:
+An complete MLFF workflow contains 3 major steps. **Firstly**, use eitehr PWmat or VASP to run AIMD calculation to generate training data (features and direvatives of features, .etc), and perform post-processing of the data. **Secondly**, run training engine to obtain the force field; **Finally**, use the obtained force field to make inference. There are two kinds of inference: **test** and **prediction**. 
 
-```
-
-### Usage example 
-```sh
-	# generate features
-	cd the/path/to/data    # in parameter.py, make sure isCalcFeat=True && isFitVdw=False
-	ulimit -Ss unlimited
-	python the/path/to/MLFF_torch/src/bin/mlff.py
-	python the/path/to/MLFF_torch/src/bin/seper.py  # in parameters.py, test_ratio = 0.2 for default
-	python the/path/to/MLFF_torch/src/bin/gen_data.py
-	# model train, mannul in MLFF_torch/parameters_template.py
-	# if you want use deepmd model in training, make sure dR_neigh=True && use_Ftype =[1]
-	cp parameters_template.py parameters.py
-	# if u have muti-MOVEMENT file in PWdata directory, in parameters.py, make sure batch_size = 1
-	python the/path/to/MLFF_torch/src/train.py --deepmd=True -n DeepMD_cfg_dp -s record
-	# if you want use MLP by kalmane filter, make sure is_scale=True, batch_size=1
-	cp parameters_template.py parameters.py
-	python the/path/to/MLFF_torch/src/train.py -s record 
-	# model test
-```
-
-### Code contribution guidance
-```sh
-	git checkout master
-	git pull origin master
-	git checkout -b your_branch_name  # e.g., hsy_dev
-	# start your code in your branch
-	# if your're ready to pull request
-	git checkout master
-	git pull origin master
-	git checkout your_branch_name
-	git rebase origin/master
-	git push origin your_branch_name
-	# in github, click pull request
-```
+For the complete user manual, please visit: 
 
 ## License 
 
-If you use this code in any future publications, please cite this:
+
+
+If you use this code in any future publications, please cite this: 
