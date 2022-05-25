@@ -6,7 +6,7 @@ Machine Learning Force Field (MLFF) an is open source software under GNU license
 
 A complete user manual can be found here: http://doc.lonxun.com/MLFF/MLFF.html
 
-You can also access our online AIMD data archive via https://www.jianguoyun.com/p/DUWoiP4Ql-_OChiEk8IEIAA
+A Cu Bulk system AIMD dataset is provided. You can also access our online AIMD data archive via https://www.jianguoyun.com/p/DUWoiP4Ql-_OChiEk8IEIAA
 
 This package contains 8 types of features with translation, rotation, and permutation invariance, which are
 
