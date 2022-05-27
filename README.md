@@ -20,15 +20,15 @@ This package contains 8 types of features with translation, rotation, and permut
         4. 3-body Cosine(3bcos) 
         5. Multiple Tensor Potential(MTP)
         6. Spectral Neighbor Analysis Potential(SNAP)
-        7. Deep Potential-Chebyshev(dp1)        
-        8. Deep Potential-Gaussian(dp2) 
+        7. DP-Chebyshev(dp1)        
+        8. DP-Gaussian(dp2) 
 
 and 4 engines for training and prediction, which are 
 
         1. Linear Model
         2. Nonlinear VV Model
         3. Kalman Filter-based Neural Netowrk (KFNN)
-        4. Kalman Filter-based Deep Potential Model(KFDP)
+        4. Kalman Filter-based DP-torch Model(KFDP)
 
 In practice, user may freely combining features with models (except for Deep Potential model, since it defines feature differerntly). A illustration of such a process is shown below. In future, we will also add support for user-defined features and training model. 
 
