@@ -5,7 +5,7 @@ ifneq ($(is_mpiifort),0)
 endif
 
 #FFLAG = -O3 -I/opt/iotk/src/ -mkl
-FFLAG = -g -traceback -C -I/opt/iotk/src/ -mkl
+FFLAG = -C -I/opt/iotk/src/ -mkl
 #SRCS = $(wildcard *.f90)
 #OBJ = $(patsubst %.f90,%.o,$(SRCS))
 # priority-sensitive
