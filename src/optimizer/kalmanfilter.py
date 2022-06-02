@@ -102,6 +102,7 @@ class GKalmanFilter(nn.Module):
         Etot_predict, Ei_predict, force_predict = self.model(
             inputs[0], inputs[1], inputs[2], inputs[3], inputs[4], inputs[5]
         )
+
         errore = Etot_label.item() - Etot_predict.item()
         natoms_sum = inputs[3][0, 0]
         errore = errore / natoms_sum
@@ -111,6 +112,7 @@ class GKalmanFilter(nn.Module):
         else:
             errore = update_prefactor * errore
             Etot_predict.backward()
+
 
         i = 0
         for name, param in self.model.named_parameters():
@@ -129,8 +131,61 @@ class GKalmanFilter(nn.Module):
         time_end = time.time()
         print("Global KF update Energy time:", time_end - time_start, "s")
 
+    def update_ei(self,inputs,Ei_label, update_prefactor=1 ):
+        time_start = time.time()
+        natoms_sum = inputs[3][0, 0]   
+
+        atom_num = len(Ei_label[0])
+        error = 0.0 
+
+        for atomIdx in range(atom_num):
+            
+            Etot_predict, Ei_predict, force_predict = self.model(inputs[0], inputs[1], inputs[2], inputs[3], inputs[4], inputs[5])
+
+            Ei_predict.requires_grad_(True)
+
+            error_tmp = Ei_label[0][atomIdx] - Ei_predict[0][atomIdx]
+
+            if error_tmp < 0:
+                error_tmp = -update_prefactor * error_tmp
+                error += error_tmp
+                (-1.0*Ei_predict[0][atomIdx]).backward(retain_graph=True)
+
+            else:
+                error += update_prefactor * error_tmp
+                Ei_predict[0][atomIdx].backward(retain_graph=True)
+
+        error /= (atom_num * natoms_sum)
+
+        tmp_grad = 0
+        i = 0
+
+        for name, param in self.model.named_parameters():
+            if i==0:
+                tmp_grad = param.grad
+                if tmp_grad == None:
+                    tmp_grad = torch.tensor([0.0])
+                H = (tmp_grad / (atom_num * natoms_sum)).T.reshape(tmp_grad.nelement(), 1)
+                weights = param.data.T.reshape(param.data.nelement(), 1)
+            else:
+                tmp_grad = param.grad
+                if tmp_grad == None:
+                    tmp_grad = torch.tensor([0.0])
+                H_new = (tmp_grad / (atom_num * natoms_sum)).T.reshape(tmp_grad.nelement(), 1)
+                H = torch.cat((H,H_new))
+                weights = torch.cat((weights, param.data.T.reshape(param.data.nelement(), 1))) 
+
+            i+=1
+
+        self.__update(H, error,  weights )
+
+        time_end = time.time()
+        print("Global KF update Atomic Energy time:", time_end - time_start, "s")
+
+
     def update_force(self, inputs, Force_label, update_prefactor=1):
         time_start = time.time()
+
 
         """
         now we begin to group
@@ -202,12 +257,13 @@ class GKalmanFilter(nn.Module):
                             ),
                         )
                     )
+                    
                     weights = torch.cat(
                         (weights, param.data.T.reshape(param.data.nelement(), 1))
                     )  # !!!!waring, should use T
                 i += 1
 
-            self.__update(H, error, weights)
+            self.__update(H, error,  weights)
 
         time_end = time.time()
         print("Global KF update Force time:", time_end - time_start, "s")
