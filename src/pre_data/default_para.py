@@ -210,6 +210,9 @@ Ftype8_para={
     }
 
 
+kfnn_trainEtot = True
+kfnn_trainEi = False
+kfnn_trainForce = True 
 
 E_tolerance=0.3
 # iflag_ftype=3        # Seems like, this should be in the Ftype1/2_para        # 2 or 3 or 4 when 4, iflag_grid must be 3
