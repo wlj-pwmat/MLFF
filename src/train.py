@@ -617,10 +617,17 @@ def train_kalman(sample_batches, model, kalman, criterion, last_epoch, real_lr):
         kalman_inputs = [Ri, Ri_d, dR_neigh_list, natoms_img, egroup_weight, divider]
     else:
         kalman_inputs = [input_data, dfeat, neighbor, natoms_img, egroup_weight, divider]
+	
+	# choosing what data are used for W update. Defualt are Etot and Force
+	
+    if pm.kfnn_trainEtot:
+        kalman.update_energy(kalman_inputs, Etot_label)
+    if pm.kfnn_trainEi:
+        kalman.update_ei(kalman_inputs,Ei_label)
+    if pm.kfnn_trainForce:
+        kalman.update_force(kalman_inputs, Force_label)
 
-    kalman.update_energy(kalman_inputs, Etot_label)
-    kalman.update_force(kalman_inputs, Force_label)
-
+        
     if opt_dp:
         # Etot_predict, Ei_predict, Force_predict = model(dR, dfeat, dR_neigh_list, natoms_img, egroup_weight, divider)
         Etot_predict, Ei_predict, Force_predict = model(Ri, Ri_d, dR_neigh_list, natoms_img, egroup_weight, divider)
@@ -631,12 +638,14 @@ def train_kalman(sample_batches, model, kalman, criterion, last_epoch, real_lr):
     loss_Etot = criterion(Etot_predict, Etot_label)
     loss_Ei = criterion(Ei_predict, Ei_label)
     loss_Egroup = 0
+
     loss = loss_F + loss_Etot
+    
     info("mse_etot = %.16f, mse_force = %.16f, RMSE_etot = %.16f, RMSE_force = %.16f"\
      %(loss_Etot, loss_F, loss_Etot ** 0.5, loss_F ** 0.5))
     
     return loss, loss_Etot, loss_Ei, loss_F
-
+    
 def valid(sample_batches, model, criterion):
     if (opt_dtype == 'float64'):
         Ei_label = Variable(sample_batches['output_energy'][:,:,:].double().to(device))
@@ -969,7 +978,7 @@ for epoch in range(start_epoch, n_epoch + 1):
 
         loss += batch_loss.item() * nr_batch_sample
         loss_Etot += batch_loss_Etot.item() * nr_batch_sample
-        # loss_Ei += batch_loss_Ei.item() * nr_batch_sample
+        loss_Ei += batch_loss_Ei.item() * nr_batch_sample
         loss_F += batch_loss_F.item() * nr_batch_sample
         nr_total_sample += nr_batch_sample
 
