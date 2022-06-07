@@ -536,10 +536,10 @@ def train(sample_batches, model, optimizer, criterion, last_epoch, real_lr):
     loss_Etot = criterion(Etot_predict, Etot_label)
 
     # loss_Etot = torch.zeros_like(loss_Etot)
-    # loss_Ei = criterion(Ei_predict, Ei_label)
+    loss_Ei = criterion(Ei_predict, Ei_label)
     # loss_Egroup = criterion(Egroup_predict, Egroup_label)
-    loss_Ei = 0
-    loss_Egroup = 0
+    #loss_Ei = 0
+    #loss_Egroup = 0
     
 
     # if loss_Etot.item() > 1e5:
