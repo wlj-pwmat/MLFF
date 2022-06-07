@@ -539,7 +539,7 @@ def train(sample_batches, model, optimizer, criterion, last_epoch, real_lr):
     loss_Ei = criterion(Ei_predict, Ei_label)
     # loss_Egroup = criterion(Egroup_predict, Egroup_label)
     #loss_Ei = 0
-    #loss_Egroup = 0
+    loss_Egroup = 0
     
 
     # if loss_Etot.item() > 1e5:
