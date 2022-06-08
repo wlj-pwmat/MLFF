@@ -105,7 +105,7 @@ atomType=[14]
 maxNeighborNum=100
 
 iflag_PCA=0
-Rc_M=5.5                     # max of Rcut
+Rc_M=6.0                     # max of Rcut
 
 Ftype_name={1:'gen_2b_feature', 2:'gen_3b_feature',
             3:'gen_2bgauss_feature', 4:'gen_3bcos_feature',
