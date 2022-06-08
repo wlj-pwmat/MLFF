@@ -131,8 +131,8 @@ batch_size = 1  # only support bn=1 so far
 nfeat_type=len(use_Ftype)
 Ftype1_para={               #2b
     'numOf2bfeat':[24 for tmp in range(10)],       # [itpye1,itype2]
-    'Rc':[5.5 for tmp in range(10)],
-    'Rm':[0.5 for tmp in range(10)],
+    'Rc':[Rc_M for tmp in range(10)],
+    'Rm':[Rc_min for tmp in range(10)],
     'iflag_grid':[3 for tmp in range(10)],                      # 1 or 2 or 3
     'fact_base':[0.2 for tmp in range(10)],
     'dR1':[0.5 for tmp in range(10)],
