@@ -16,6 +16,8 @@ program main_MD
         use calc_lin, only : set_paths_lin,load_model_lin,set_image_info_lin,nfeat_type_l,ifeat_type_l
         use calc_VV, only : set_paths_VV,load_model_VV,set_image_info_VV,nfeat_type_v,ifeat_type_v
         use calc_NN, only : set_paths_NN,load_model_NN,set_image_info_NN,nfeat_type_n,ifeat_type_n
+        use calc_deepMD, only :set_paths_deepMD,load_model_deepMD,set_image_info_deepMD
+        use calc_deepMD_f,only: load_model_deepMD_f,set_image_info_deepMD_f
 
         implicit none
 
@@ -127,6 +129,15 @@ program main_MD
             ifeat_type=ifeat_type_n
         endif
 
+        if(iflag_model.eq.5) then
+            call set_paths_deepMD('.')
+            call load_model_deepMD()
+            call set_image_info_deepMD(iatom,is_reset,natom)
+            call load_model_deepMD_f()
+            is_reset=.true.      ! why
+            call set_image_info_deepMD_f(iatom,is_reset,natom)   ! why need this?
+        endif
+
         !if(iflag_model.eq.4) then
 
         !    write(*,*) "asdasdsad"
@@ -180,6 +191,7 @@ program main_MD
               endif
             enddo
         endif
+
          !TODO: whether we need to set which one we use
         !  call load_model_type1()      ! load up the parameter etc
         !  call set_image_info_type1(iatom,is_reset,natom)

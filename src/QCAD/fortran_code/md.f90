@@ -87,8 +87,9 @@ subroutine molecular_dynamics_kernel(Etot,fatom,e_stress)
         ! e_stress=0.d0
         ! Etot=2.d0
         AL_tmp=MCTRL_AL*A_AU_1   ! convert to A
+
         
-        if ((iflag_model.eq.1) .or. (iflag_model.eq.2) .or. (iflag_model.eq.3)) then 
+        if ((iflag_model.eq.1) .or. (iflag_model.eq.2) .or. (iflag_model.eq.3).or. (iflag_model.eq.5)) then 
             call ML_FF_EF(Etot,fatom,MCTRL_xatom,AL_tmp,MCTRL_natom)
         end if 
 

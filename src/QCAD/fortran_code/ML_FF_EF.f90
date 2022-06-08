@@ -20,11 +20,13 @@ subroutine ML_FF_EF(Etot,fatom,xatom,AL,natom_tmp)
                 nfeat0M7,num_neigh_alltypeM7,list_neigh_alltypeM7,natom7,m_neigh7
         use calc_deepMD2_feature, only : feat_M8,dfeat_M8,nfeat0M8,gen_deepMD2_feature,  &
                 nfeat0M8,num_neigh_alltypeM8,list_neigh_alltypeM8,natom8,m_neigh8
+         
 
         !  Note: num_neigh)alltypeM1,2; list_neigh_altypeM1,2 should be the same for 1 & 2
         use calc_lin, only : cal_energy_force_lin,Etot_pred_lin,force_pred_lin,nfeat_type_l,ifeat_type_l,energy_pred_lin
         use calc_VV, only : cal_energy_force_VV,Etot_pred_VV,force_pred_VV,nfeat_type_v,ifeat_type_v, energy_pred_vv
         use calc_NN, only : cal_energy_force_NN,Etot_pred_NN,force_pred_NN,nfeat_type_n,ifeat_type_n, energy_pred_nn
+        use calc_deepMD, only : cal_energy_force_deepMD,Etot_pred_deepMD
         implicit none
 
         integer natom_tmp,natom,m_neigh  ! conflict with the one in calc_lin
@@ -45,6 +47,7 @@ subroutine ML_FF_EF(Etot,fatom,xatom,AL,natom_tmp)
         !for calling predict.py
         character(200) :: cmd_name, flag, etot_name, ei_name, fi_name
         integer(2):: s
+
 
         ! nothing should be done for dp which is model #4 
         if ((iflag_model.eq.1) .or. (iflag_model.eq.2) .or. (iflag_model.eq.3)) then 
@@ -414,6 +417,10 @@ subroutine ML_FF_EF(Etot,fatom,xatom,AL,natom_tmp)
             e_atom(1:natom_tmp)=energy_pred_nn(1:natom_tmp)
             fatom(:,1:natom_tmp)=force_pred_NN(:,1:natom_tmp)   ! unit, and - sign?
             
+        endif
+
+        if(iflag_model.eq.5) then   ! a bit special
+            call cal_energy_force_deepMD(AL,xatom,Etot,fatom)
         endif
             
         if(iflag_model.eq.4) then 

@@ -411,6 +411,8 @@ module calc_NN
 
 
          pi=4*datan(1.d0)
+
+         write(6,*) "test natom_n=",natom_n
         
         
         
