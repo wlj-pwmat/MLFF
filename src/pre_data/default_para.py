@@ -105,6 +105,7 @@ atomType=[14]
 maxNeighborNum=100
 
 iflag_PCA=0
+
 Rc_M=6.0                     # max of Rcut
 Rc_min = 5.8
 
@@ -141,9 +142,9 @@ Ftype1_para={               #2b
 Ftype2_para={             # 3b
     'numOf3bfeat1':[3 for tmp in range(10)],
     'numOf3bfeat2':[3 for tmp in range(10)],
-    'Rc':[5.5 for tmp in range(10)],
-    'Rc2':[5.5 for tmp in range(10)],
-    'Rm':[0.5 for tmp in range(10)],
+    'Rc':[Rc_M for tmp in range(10)],
+    'Rc2':[Rc_M for tmp in range(10)],
+    'Rm':[Rc_min for tmp in range(10)],
     'iflag_grid':[3 for tmp in range(10)],                      # 1 or 2 or 3
     'fact_base':[0.2 for tmp in range(10)],
     'dR1':[0.5 for tmp in range(10)],
