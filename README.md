@@ -33,3 +33,6 @@ and 4 engines for training and prediction, which are
 In practice, user may freely combining features with models (except for Deep Potential model, since it defines feature differerntly). A illustration of such a process is shown below. In future, we will also add support for user-defined features and training model. 
 
 An complete MLFF workflow contains 3 major steps. **Firstly**, use eitehr PWmat or VASP to run AIMD calculation to generate training data (features and direvatives of features, .etc), and perform post-processing of the data. **Secondly**, run training engine to obtain the force field; **Finally**, use the obtained force field to make inference, which includes **test** and **prediction**. 
+
+
+
