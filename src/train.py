@@ -31,9 +31,6 @@ sys.path.append(os.getcwd())
 #import parameters as pm 
 codepath=os.path.abspath(sys.path[0])
 
-
-#print(codepath)
-
 sys.path.append(codepath+'/pre_data')
 sys.path.append(codepath+'/..')
 import use_para as pm
@@ -421,13 +418,13 @@ def get_loss_func(start_lr, real_lr, has_fi, lossFi, has_etot, loss_Etot, has_eg
     pref_egroup = has_egroup * (limit_pref_egroup + (start_pref_egroup - limit_pref_egroup) * real_lr / start_lr)
     pref_ei = has_ei * (limit_pref_ei + (start_pref_ei - limit_pref_ei) * real_lr / start_lr)
     l2_loss = 0
-    if has_fi:
+    if has_fi==1:
         l2_loss += pref_fi * lossFi      # * 108
-    if has_etot:
+    if has_etot==1:
         l2_loss += 1./natoms_sum * pref_etot * loss_Etot  # 1/108 = 0.009259259259, 1/64=0.015625
-    if has_egroup :
+    if has_egroup==1:
         l2_loss += pref_egroup * loss_Egroup
-    if has_ei :
+    if has_ei==1:
         l2_loss += pref_ei * loss_Ei
     
     return l2_loss, pref_fi, pref_etot
@@ -484,13 +481,14 @@ def train(sample_batches, model, optimizer, criterion, last_epoch, real_lr):
     natoms_img = Variable(sample_batches['natoms_img'].int().to(device))
     # dumping what you want here
     #
+    """
     dump("defat.shape= %s" %(dfeat.shape,))
     dump("neighbor.shape = %s" %(neighbor.shape,))
     dump("dump dfeat ------------------->")
     dump(dfeat)
     dump("dump neighbor ------------------->")
     dump(neighbor)
-
+    """
     # model = model.cuda()
     # model = torch.nn.parallel.DistributedDataParallel(model)
     # model.train()
@@ -513,6 +511,8 @@ def train(sample_batches, model, optimizer, criterion, last_epoch, real_lr):
     # Egroup_predict = model.get_egroup(egroup_weight, divider)   #[40,108,1]
 
     # Etot_deviation = Etot_predict - Etot_label     # [40,1]
+
+    """
     dump("etot predict =============================================>")
     dump(Etot_predict)
     dump("etot label ===============================================>")
@@ -530,31 +530,37 @@ def train(sample_batches, model, optimizer, criterion, last_epoch, real_lr):
         summary(Force_predict)
         summary("force label ==============================================>")
         summary(Force_label)
+    """
 
+    loss_Etot = torch.zeros([1,1])
+    loss_Ei = torch.zeros([1,1])
+    loss_F = torch.zeros([1,1])
+    loss_Egroup = 0
+    # update loss with repsect to the data used
+    if pm.kfnn_trainEi:
+        loss_Ei = criterion(Ei_predict, Ei_label)
+    if pm.kfnn_trainEtot:
+        loss_Etot = criterion(Etot_predict, Etot_label)
+    if pm.kfnn_trainForce:
+        loss_F = criterion(Force_predict, Force_label)
 
+    """
     loss_F = criterion(Force_predict, Force_label)
     loss_Etot = criterion(Etot_predict, Etot_label)
-
-    # loss_Etot = torch.zeros_like(loss_Etot)
     loss_Ei = criterion(Ei_predict, Ei_label)
     # loss_Egroup = criterion(Egroup_predict, Egroup_label)
     #loss_Ei = 0
-    loss_Egroup = 0
     
-
-    # if loss_Etot.item() > 1e5:
-    #     print("a debug")
-    #     return torch.zeros(1), torch.zeros(1), torch.zeros(1), torch.zeros(1)
-    
+    """
     start_lr = opt_lr
-    w_f = 1
-    w_e = 1
-    w_eg = 0
-    w_ei = 0
-    
-    loss, pref_f, pref_e = get_loss_func(start_lr, real_lr, w_f, loss_F, w_e, loss_Etot, w_eg, loss_Egroup, w_ei, loss_Ei, natoms_img[0, 0].item())
-    # loss = loss_Etot
+    w_f = 1 if pm.kfnn_trainForce == True else 0
+    w_e = 1 if pm.kfnn_trainEtot == True else 0
+    w_ei = 1 if pm.kfnn_trainEi == True else 0
+    w_eg = 0 
 
+    loss, pref_f, pref_e = get_loss_func(start_lr, real_lr, w_f, loss_F, w_e, loss_Etot, w_eg, loss_Egroup, w_ei, loss_Ei, natoms_img[0, 0].item())
+
+    # using a total loss to update weights 
     loss.backward()
 
     # 打印权重
@@ -566,8 +572,11 @@ def train(sample_batches, model, optimizer, criterion, last_epoch, real_lr):
     # import ipdb; ipdb.set_trace()
 
     optimizer.step()
+
+    """
     info("loss = %.16f (loss_etot = %.16f, loss_force = %.16f, RMSE_etot = %.16f, RMSE_force = %.16f)"\
      %(loss, loss_Etot, loss_F, loss_Etot ** 0.5, loss_F ** 0.5))
+    """
     
     return loss, loss_Etot, loss_Ei, loss_F
 
@@ -618,8 +627,8 @@ def train_kalman(sample_batches, model, kalman, criterion, last_epoch, real_lr):
     else:
         kalman_inputs = [input_data, dfeat, neighbor, natoms_img, egroup_weight, divider]
 	
+    
 	# choosing what data are used for W update. Defualt are Etot and Force
-	
     if pm.kfnn_trainEtot:
         kalman.update_energy(kalman_inputs, Etot_label)
     if pm.kfnn_trainEi:
@@ -627,23 +636,36 @@ def train_kalman(sample_batches, model, kalman, criterion, last_epoch, real_lr):
     if pm.kfnn_trainForce:
         kalman.update_force(kalman_inputs, Force_label)
 
-        
     if opt_dp:
         # Etot_predict, Ei_predict, Force_predict = model(dR, dfeat, dR_neigh_list, natoms_img, egroup_weight, divider)
         Etot_predict, Ei_predict, Force_predict = model(Ri, Ri_d, dR_neigh_list, natoms_img, egroup_weight, divider)
     else:
         Etot_predict, Ei_predict, Force_predict = model(input_data, dfeat, neighbor, natoms_img, egroup_weight, divider)
 
-    loss_F = criterion(Force_predict, Force_label)
-    loss_Etot = criterion(Etot_predict, Etot_label)
-    loss_Ei = criterion(Ei_predict, Ei_label)
-    loss_Egroup = 0
+    # dtype same as torch.default
+    loss_Etot = torch.zeros([1,1])
+    loss_Ei = torch.zeros([1,1])
+    loss_F = torch.zeros([1,1])
 
-    loss = loss_F + loss_Etot
-    
+    # update loss with repsect to the data used
+    if pm.kfnn_trainEi:
+        loss_Ei = criterion(Ei_predict, Ei_label)
+    if pm.kfnn_trainEtot:
+        loss_Etot = criterion(Etot_predict, Etot_label)
+    if pm.kfnn_trainForce:
+        loss_F = criterion(Force_predict, Force_label)
+
+    #loss_F = criterion(Force_predict, Force_label)
+    #loss_Etot = 0.0 
+    #loss_Ei = criterion(Ei_predict, Ei_label)
+    #loss_Ei = 0.0
+    loss_Egroup = 0.0
+
+    loss = loss_F + loss_Etot + loss_Ei 
+    """
     info("mse_etot = %.16f, mse_force = %.16f, RMSE_etot = %.16f, RMSE_force = %.16f"\
      %(loss_Etot, loss_F, loss_Etot ** 0.5, loss_F ** 0.5))
-    
+    """
     return loss, loss_Etot, loss_Ei, loss_F
     
 def valid(sample_batches, model, criterion):
@@ -697,10 +719,29 @@ def valid(sample_batches, model, criterion):
         Etot_predict, Ei_predict, Force_predict = model(input_data, dfeat, neighbor, natoms_img, egroup_weight, divider)
     
     # Egroup_predict = model.get_egroup(Ei_predict, egroup_weight, divider)
+
+
+    # the logic is the same as training.
+    """
     loss_F = criterion(Force_predict, Force_label)
     loss_Etot = criterion(Etot_predict, Etot_label)
     loss_Ei = criterion(Ei_predict, Ei_label)
-    error = float(loss_F.item()) + float(loss_Etot.item())
+    """
+
+    loss_Etot = torch.zeros([1,1])
+    loss_Ei = torch.zeros([1,1])
+    loss_F = torch.zeros([1,1])
+
+    # update loss with repsect to the data used
+    if pm.kfnn_trainEi:
+        loss_Ei = criterion(Ei_predict, Ei_label)
+    if pm.kfnn_trainEtot:
+        loss_Etot = criterion(Etot_predict, Etot_label)
+    if pm.kfnn_trainForce:
+        loss_F = criterion(Force_predict, Force_label)
+
+    error = float(loss_F.item()) + float(loss_Etot.item()) + float(loss_Ei.item())
+
     return error, loss_Etot, loss_Ei, loss_F
 
 def sec_to_hms(seconds):
@@ -713,7 +754,6 @@ def LinearLR(optimizer, base_lr, target_lr, total_epoch, cur_epoch):
     lr = base_lr - (base_lr - target_lr) * (float(cur_epoch) / float(total_epoch))
     for param_group in optimizer.param_groups:
         param_group['lr'] = lr
-
 
 # ==========================part1:打印参数 && 数据读取==========================
 
@@ -930,9 +970,10 @@ for epoch in range(start_epoch, n_epoch + 1):
     loss_Ei = 0.
     loss_F = 0.
     # lr_bn32 = math.sqrt(32) 
+
     for i_batch, sample_batches in enumerate(loader_train):
         nr_batch_sample = sample_batches['input_feat'].shape[0]
-        debug("nr_batch_sample = %s" %nr_batch_sample)
+        #debug("nr_batch_sample = %s" %nr_batch_sample)
         global_step = (epoch - 1) * len(loader_train) + i_batch * nr_batch_sample
         real_lr = adjust_lr(global_step)
         for param_group in optimizer.param_groups:
@@ -958,7 +999,6 @@ for epoch in range(start_epoch, n_epoch + 1):
             batch_loss, batch_loss_Etot, batch_loss_Ei, batch_loss_F = \
                 train(sample_batches, model, optimizer, nn.MSELoss(), last_epoch, real_lr)
             
-
         # print("batch loss:" + str(batch_loss.item()))
         # # print("batch mse ei:" + str(batch_loss_Ei.item()))
         # print("batch mse etot:" + str(batch_loss_Etot.item()))
