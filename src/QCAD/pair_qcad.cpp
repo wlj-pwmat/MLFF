@@ -1,5 +1,5 @@
 #include "pair_qcad.h"
-#include "diy.hpp"
+#include "diy.h"
 
 #include "atom.h"
 #include "comm.h"
