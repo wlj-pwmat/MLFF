@@ -4,7 +4,7 @@ program main_MD
         use mod_data
         use mod_control
         use mod_md
-        use data_ewald, only : zatom_ewald, tmp_iatom, tmp_zatom, n_born_type 
+        use data_ewald !only : zatom_ewald, tmp_iatom, tmp_zatom, n_born_type 
         use calc_ftype1, only : load_model_type1,set_image_info_type1
         use calc_ftype2, only : load_model_type2,set_image_info_type2
         use calc_2bgauss_feature, only : load_model_type3,set_image_info_type3
@@ -45,18 +45,18 @@ program main_MD
         write(6,*) "TEST1.1 nodes=",nnodes
 
         ! liuliping, is_ewald
-        open(1314, file='input/ewald.input', action='read', iostat=ierr)
-        if (ierr .ne. 0) then
-            iflag_born_charge_ewald = 0
-        else 
-            read(1314, *) iflag_born_charge_ewald
-            read(1314, *) n_born_type
-            do i = 1, n_born_type
-                read(1314, *) tmp_iatom, tmp_zatom
-                zatom_ewald(tmp_iatom) = tmp_zatom
-            end do
-            close(1314)
-        end if
+        !open(1314, file='input/ewald.input', action='read', iostat=ierr)
+        !if (ierr .ne. 0) then
+        !    iflag_born_charge_ewald = 0
+        !else 
+        !    read(1314, *) iflag_born_charge_ewald
+        !    read(1314, *) n_born_type
+        !    do i = 1, n_born_type
+        !        read(1314, *) tmp_iatom, tmp_zatom
+        !        zatom_ewald(tmp_iatom) = tmp_zatom
+        !    end do
+        !    close(1314)
+        !end if
         ! liuliping, is_ewald end
 
         open(9,file="md.input")
@@ -75,7 +75,8 @@ program main_MD
         iscale_temp_VVMD=0
         
         call readf_xatom_new(iMD,ntype_mass,itype_mass,mass_type)
-
+        call get_zatom(natom)
+        
         iat1=0
         do i=1,natom
         if(mod(i-1,nnodes).eq.inode-1) then
