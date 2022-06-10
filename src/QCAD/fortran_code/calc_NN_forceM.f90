@@ -194,7 +194,9 @@ module calc_NN
         write(6,*) "nlayer_tmp cannot by divided by ntype*2, Wij.txt",nlayer_tmp
         stop
         endif 
-        allocate(nodeNN(nlayer+1,ntype))
+        if (.not. allocated(nodeNN)) then
+            allocate(nodeNN(nlayer+1,ntype))
+        end if
         do itype=1,ntype
         do ii=1,nlayer
         read(12,*) txt,nodeNN(ii,itype),nodeNN(ii+1,itype)
@@ -211,11 +213,12 @@ module calc_NN
         if(nodeNN(ii,itype).gt.nodeMM) nodeMM=nodeNN(ii,itype)
         enddo
         enddo
-        
+      if (.not. allocated(a_scaler)) then
         allocate(a_scaler(nfeat1m,ntype))
         allocate(b_scaler(nfeat1m,ntype))
         allocate(Wij_nn(nodeMM,nodeMM,nlayer,ntype))
         allocate(B_nn(nodeMM,nlayer,ntype))
+      end if
 !cccccccccccccccccccccccccccccccccccccccccccccccccccc
 
         open (12, file=trim(model_Wij_path))
