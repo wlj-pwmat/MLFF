@@ -51,18 +51,7 @@ subroutine f2c_calc_energy_force(i_model_lvn, n_atom, type_atom, lat,&
     integer iscale_temp_VVMD
     !call mpi_init(ierr)
     ! liuliping, is_ewald
-    open(1314, file='input/ewald.input', iostat=ierr)
-    if (ierr .ne. 0) then
-        iflag_born_charge_ewald = 0
-    else
-        read(1314, *) iflag_born_charge_ewald
-        read(1314, *) n_born_type
-        do i = 1, n_born_type
-            read(1314, *) tmp_iatom, tmp_zatom
-            zatom_ewald(tmp_iatom) = tmp_zatom
-        end do
-        close(1314)
-    end if
+    call get_zatom(n_atom)
     ! liuliping, is_ewald end
 
     call mpi_comm_rank(MPI_COMM_WORLD,inode,ierr)

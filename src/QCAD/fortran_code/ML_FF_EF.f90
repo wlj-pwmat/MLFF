@@ -1,7 +1,7 @@
 subroutine ML_FF_EF(Etot,fatom,xatom,AL,natom_tmp)
         use IFPORT
         use mod_mpi
-        use mod_data, only : iflag_model, e_atom, iatom, iflag_born_charge_ewald
+        use mod_data, only : iflag_model, e_atom, iatom
         use data_ewald
         use calc_ftype1, only : feat_M1,dfeat_M1,nfeat0M1,gen_feature_type1,  &
                  nfeat0M1,num_neigh_alltypeM1,list_neigh_alltypeM1,  &

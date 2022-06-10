@@ -17,5 +17,7 @@ module data_ewald
     real*8 ewald
     real*8, allocatable, dimension(:) :: ewald_atom
     real*8, allocatable, dimension(:,:) :: fatom_ewald
+    integer iflag_born_charge_ewald
+    real*8  ewald_epsilon
 
 end module data_ewald
