@@ -142,20 +142,22 @@ contains
      nfeat0(itype)=num
      enddo
 
-     if(inode.eq.1) then
-     write(6,*) "ftype2: max_nfeat0m=",nfeat0m
-     write(6,*) "ftype2,nfeat0(at_type)=",(nfeat0(itype),itype=1,ntype)
-     endif
+    !if(inode.eq.1) then
+    !write(6,*) "ftype2: max_nfeat0m=",nfeat0m
+    !write(6,*) "ftype2,nfeat0(at_type)=",(nfeat0(itype),itype=1,ntype)
+    !endif
 
 
 !cccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 
 !cccccccccccccccccccccccccccccccccccccccccccccccccccc
-    allocate(grid31(0:n3b1m+1,ntype))
-    allocate(grid32(0:n3b2m+1,ntype))
-    allocate(grid31_2(2,n3b1m,ntype))
-    allocate(grid32_2(2,n3b2m,ntype))
+    if (.not. allocated(grid31) ) then
+          allocate(grid31(0:n3b1m+1,ntype))
+          allocate(grid32(0:n3b2m+1,ntype))
+          allocate(grid31_2(2,n3b1m,ntype))
+          allocate(grid32_2(2,n3b2m,ntype))
+    end if
 !cccccccccccccccccccccccccccccccccccccccccccccccccccc
      do kkk=1,ntype    ! center atom
 

@@ -105,9 +105,11 @@ contains
     !cccccccccccccccccccccccccccccccccccccccccccccccccccc
     
     !cccccccccccccccccccccccccccccccccccccccccccccccccccc
-        write(*,*) "n2bm, ntype: ", n2bm, ntype
-        allocate(grid2(0:n2bm+1,ntype))
-        allocate(grid2_2(2,n2bm+1,ntype))
+        !write(*,*) "n2bm, ntype: ", n2bm, ntype
+        if (.not. allocated(grid2)) then
+            allocate(grid2(0:n2bm+1,ntype))
+            allocate(grid2_2(2,n2bm+1,ntype))
+        end if
     !cccccccccccccccccccccccccccccccccccccccccccccccccccc
          do kkk=1,ntype    ! center atom
          
