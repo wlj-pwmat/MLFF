@@ -1,0 +1,13 @@
+*.o
+*.mod
+*.x
+*.r
+*.so
+*.py[cod]
+*.egg
+*.egg-info
+*.a
+*.a
+**/__pycache__
+**/tags
+**/ignore_git

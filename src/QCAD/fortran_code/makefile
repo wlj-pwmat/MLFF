@@ -22,7 +22,7 @@ OBJ = data_ewald.o mod_neighbor.o mod_matom.o mod_mpi.o mod_data.o mod_control.o
         calc_lin_forceM.o calc_VV_forceM.o calc_NN_forceM.o gen_deepMD_feature.o calc_deepMD_forceM.o find_neighbore.o get_expand_MT.o \
         calc_chebyshev.o calc_clebsch_gordan.o calc_U_JM1M2.o calc_loop_ind.o calc_polynomial.o \
         readf_xatom_new.o md.o ranfx.o rantest.o numeric_container.o get_ALI.o gaussj.o factorial.o \
-	get_ewald.o \
+	get_zatom.o get_ewald.o \
         gen_2b_feature.o gen_3b_feature.o gen_2bgauss_feature.o gen_3bcos_feature.o \
         gen_MTP_feature.o gen_SNAP_feature.o gen_deepMD1_feature.o gen_deepMD2_feature.o \
         find_feature_2b_type1.o find_feature_2b_type2.o find_feature_2b_type3.o \
