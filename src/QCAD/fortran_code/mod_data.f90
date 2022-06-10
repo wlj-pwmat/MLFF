@@ -16,6 +16,5 @@ module mod_data
     character*20 f_xatom
     integer iflag_model
     integer :: iflag_reneighbor = 1
-    integer iflag_born_charge_ewald
 end module mod_data 
 
