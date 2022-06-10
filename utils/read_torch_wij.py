@@ -35,7 +35,7 @@ parse_input.parse_input()
 # Wij.txt structure: w0, b0, w1, b1, w2, b2
 #   [42,60], [60], [60,30], [30], [30,1], [1]
 def read_wij():
-    pt_file=os.path.join('record/model/latest.pt')
+    pt_file=os.path.join('record/model/better.pt')
     chpt = torch.load(pt_file,map_location=torch.device('cpu'))
     nn_model = chpt['model']
     nlayers = len(nn_model) // pm.ntypes // 2

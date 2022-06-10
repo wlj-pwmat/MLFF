@@ -238,9 +238,9 @@ ClusterNum=[3,2]
 
 fortranFitAtomRepulsingEnergies=[0.000 for tmp in range(10)]            #fortran fitting时对每种原子设置的排斥能量的大小，此值必须设置，无default值！(list_like)
 fortranFitAtomRadii=[1.0 for tmp in range(10)]                        #fortran fitting时对每种原子设置的半径大小，此值必须设置，无default值！(list_like)
-fortranFitWeightOfEnergy=0.2                    #fortran fitting时最后fit时各个原子能量所占的权重(linear和grr公用参数)  default:0.9
-fortranFitWeightOfEtot=0.6                      #fortran fitting时最后fit时Image总能量所占的权重(linear和grr公用参数)  default:0.0
-fortranFitWeightOfForce=0.2                     #fortran fitting时最后fit时各个原子所受力所占的权重(linear和grr公用参数)  default:0.1
+fortranFitWeightOfEnergy=0.0                    #fortran fitting时最后fit时各个原子能量所占的权重(linear和grr公用参数)  default:0.9
+fortranFitWeightOfEtot=0.5                      #fortran fitting时最后fit时Image总能量所占的权重(linear和grr公用参数)  default:0.0
+fortranFitWeightOfForce=0.5                     #fortran fitting时最后fit时各个原子所受力所占的权重(linear和grr公用参数)  default:0.1
 fortranFitRidgePenaltyTerm=0.0001               #fortran fitting时最后岭回归时所加的对角penalty项的大小(linear和grr公用参数)  default:0.0001
 fortranFitDwidth = 3.0
 ''' examples for vdw

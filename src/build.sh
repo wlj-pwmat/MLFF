@@ -21,8 +21,8 @@ ln -s ../predict.py .
 ln -s ../../utils/read_torch_wij.py . 
 ln -s ../../utils/plot_nn_test.py . 
 ln -s ../../utils/plot_mlff_inference.py .
-ln -s ../../utils/xdat2move.py .
-ls -s ../../utils/read_torch_wij_dp.py . 
+ln -s ../../utils/read_torch_wij_dp.py . 
+ln -s ../../utils/outcar2movement . 
 
 chmod +x ./mlff.py
 chmod +x ./seper.py
@@ -35,6 +35,6 @@ chmod +x ./read_torch_wij.py
 chmod +x ./read_torch_wij_dp.py
 chmod +x ./plot_nn_test.py
 chmod +x ./plot_mlff_inference.py 
-chmod +x ./xdat2move.py
+chmod +x ./outcar2movement
 
 cd ..            # back to src dir
