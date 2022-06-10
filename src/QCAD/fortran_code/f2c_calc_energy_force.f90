@@ -51,7 +51,7 @@ subroutine f2c_calc_energy_force(i_model_lvn, n_atom, type_atom, lat,&
     integer iscale_temp_VVMD
     !call mpi_init(ierr)
     ! liuliping, is_ewald
-    call get_ewald(n_atom)
+    call get_zatom(n_atom)
     ! liuliping, is_ewald end
 
     call mpi_comm_rank(MPI_COMM_WORLD,inode,ierr)
